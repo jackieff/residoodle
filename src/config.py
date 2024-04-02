@@ -24,7 +24,7 @@ It pulls it directly from the ShiftAdmin database.
 
 **How does it know who is off-service?**
 
-I hand-typed the whole block schedule...
+From the block schedule 
 
 **What's the difference between "Day Off" and "Free"?**
 
@@ -34,6 +34,6 @@ to work but their shift doesn't overlap the chosen time window.
 
 **Is there anything scheduling-wise that it doesn't include?**
 
-It doesn't have ultrasound shifts right now, and vacations are considered as "days off" 
-rather than handled differently. CES is considered off-service. 
+Vacations are considered as "days off" rather than handled differently, and LTJ will 
+appear as days off as well. 
 '''
