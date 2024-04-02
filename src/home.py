@@ -262,7 +262,8 @@ def get_busy_counts(g : pd.DataFrame, sel_res : Collection[str], start_time : da
     # st.write(g)
     on_shift = (
         g[~is_os]#.assign(StartTime = g['Start'].dt.time, EndTime = g['End'].dt.time)
-                .query('(@start_time <= StartTime <= @end_time) or (StartTime <= @start_time <= EndTime)')
+                .query('(@start_time <= StartTime <= @end_time) or (StartTime <= @start_time <= EndTime) \
+                       or (EndTime == datetime.time(hour=0) and Type == "Evening")')
     )
     shift_res = set(on_shift['Resident'])
     shift_res_shifts = on_shift['Shift'].tolist()
@@ -270,7 +271,8 @@ def get_busy_counts(g : pd.DataFrame, sel_res : Collection[str], start_time : da
     
     not_on_shift = (
         g[~is_os]#.assign(StartTime = g['Start'].dt.time, EndTime = g['End'].dt.time)
-                .query('not ((@start_time <= StartTime <= @end_time) or (StartTime <= @start_time <= EndTime))')
+                .query('not ((@start_time <= StartTime <= @end_time) or (StartTime <= @start_time <= EndTime) \
+                       or (EndTime == datetime.time(hour=0) and Type == "Evening"))')
     )
     free_res = set(not_on_shift['Resident'])
     free_res_shifts = not_on_shift['Shift'].tolist()
