@@ -12,6 +12,8 @@ import logging as log
 _API_URL = 'https://www.shiftadmin.com/api_getscheduledshifts_json.php'
 _API_VALIDATION_KEY = 'UMICH_jrmacyu77w'
 _API_UM_GID = 1
+_API_UM_CES_GID = 3
+_API_US_GID = 10
 _API_HMC_GID = 9
 _API_STRFTIME = '%Y-%m-%d'
 
@@ -44,12 +46,30 @@ def load_sched_api(start_date : datetime.date, end_date : datetime.date,
     df_hmc = _json_to_df(data)
     log.info(f'Done. Got {len(df_hmc)} shifts')
 
+    log.info('ShiftAdmin request for CES...')
+    params['gid'] = _API_UM_CES_GID
+    log.debug(f'Parameters: {params}')
+    r = requests.get(_API_URL, params=params)
+    log.debug(f'URL: {r.url}')
+    data = r.json()
+    df_ces = _json_to_df(data)
+    log.info(f'Done. Got {len(df_ces)} shifts')
+
+    log.info('ShiftAdmin request for US...')
+    params['gid'] = _API_US_GID
+    log.debug(f'Parameters: {params}')
+    r = requests.get(_API_URL, params=params)
+    log.debug(f'URL: {r.url}')
+    data = r.json()
+    df_us = _json_to_df(data)
+    log.info(f'Done. Got {len(df_us)} shifts')
+
     if remove_nonum_hurley:
         log.info('Removing non UM shifts from HMC schedule...')
         df_hmc = df_hmc[df_hmc['shiftShortName'].str.contains(' M')]
         log.info(f'{len(df_hmc)} shifts remaining')
 
-    df = pd.concat([df_um, df_hmc])
+    df = pd.concat([df_um, df_hmc, df_us, df_ces])
 
     # Clean and add extra columns
     df = _postproc_df(df)
