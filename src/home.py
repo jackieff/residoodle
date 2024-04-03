@@ -265,6 +265,8 @@ def get_busy_counts(g : pd.DataFrame, sel_res : Collection[str], start_time : da
                 .query('(@start_time <= StartTime <= @end_time) or (StartTime <= @start_time <= EndTime) \
                        or (EndTime == datetime.time(hour=0) and Type == "Evening")')
     )
+    on_shift = on_shift[on_shift.Shift!='QA'] #treating QA as day off since it is not a physical shift 
+
     shift_res = set(on_shift['Resident'])
     shift_res_shifts = on_shift['Shift'].tolist()
     # st.write(len(shift_res), len(shift_res_shifts))
@@ -277,10 +279,7 @@ def get_busy_counts(g : pd.DataFrame, sel_res : Collection[str], start_time : da
     free_res = set(not_on_shift['Resident'])
     free_res_shifts = not_on_shift['Shift'].tolist()
     # st.write(len(free_res), len(free_res_shifts))
-
     try: 
-        if len(shift_res_shifts)>1 and 'QA' in shift_res_shifts:
-            shift_res_shifts.remove('QA')
         return pd.DataFrame({
             'Availability': (['Day Off']*len(day_off_res) + ['Off Service']*len(os_res) + ['On Shift']*len(shift_res) + ['Free']*len(free_res)),
             'Resident': list(day_off_res) + list(os_res) + list(shift_res) + list(free_res),
