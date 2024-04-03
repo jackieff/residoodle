@@ -72,12 +72,6 @@ def run():
         .assign(Site='OS', Type='Off Service')
         # select only those rotations which intersect the selected dates
         .query('(@start_date <= Start <= @end_date) or (Start <= @start_date <= End)')
-
-        # select Hurley Trauma rotations and only for selected residents
-        .query('Shift == "HTrauma" and Resident in @sel_res')
-        .assign(Site='OS', Type='Off Service')
-        # select only those rotations which intersect the selected dates
-        .query('(@start_date <= Start <= @end_date) or (Start <= @start_date <= End)')
     )
 
     # rbs 
