@@ -35,5 +35,6 @@ to work but their shift doesn't overlap the chosen time window.
 **Is there anything scheduling-wise that it doesn't include?**
 
 Vacations are considered as "days off" rather than handled differently, and LTJ will 
-appear as days off as well. 
+appear as days off as well. If you have an Ultrasound QA shift scheduled on the same 
+day as another shift, the QA will not show up.
 '''

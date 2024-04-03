@@ -72,6 +72,12 @@ def run():
         .assign(Site='OS', Type='Off Service')
         # select only those rotations which intersect the selected dates
         .query('(@start_date <= Start <= @end_date) or (Start <= @start_date <= End)')
+
+        # select Hurley Trauma rotations and only for selected residents
+        .query('Shift == "HTrauma" and Resident in @sel_res')
+        .assign(Site='OS', Type='Off Service')
+        # select only those rotations which intersect the selected dates
+        .query('(@start_date <= Start <= @end_date) or (Start <= @start_date <= End)')
     )
 
     # rbs 
@@ -279,6 +285,8 @@ def get_busy_counts(g : pd.DataFrame, sel_res : Collection[str], start_time : da
     # st.write(len(free_res), len(free_res_shifts))
 
     try: 
+        if len(shift_res_shifts)>1 and 'QA' in shift_res_shifts:
+            shift_res_shifts.remove('QA')
         return pd.DataFrame({
             'Availability': (['Day Off']*len(day_off_res) + ['Off Service']*len(os_res) + ['On Shift']*len(shift_res) + ['Free']*len(free_res)),
             'Resident': list(day_off_res) + list(os_res) + list(shift_res) + list(free_res),
