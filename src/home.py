@@ -267,6 +267,31 @@ def get_busy_counts(g : pd.DataFrame, sel_res : Collection[str], start_time : da
     )
     on_shift = on_shift[on_shift.Shift!='QA'] #treating QA as day off since it is not a physical shift 
 
+    #handling days with another shift + jeopardy 
+    for res in on_shift.Resident.unique():
+        rshifts = on_shift[on_shift.Resident==res]
+        assert(len(rshifts)<=2)
+
+        if any(rshifts.Shift.str.match("J ")):
+            #check for J AM or J PM
+            if len(rshifts.where(rshifts.Shift == "J AM").dropna()) > 0:
+                new_row = rshifts.where(rshifts.Shift == "J AM").dropna().copy()
+                new_row.Shift = rshifts.Shift.str.cat(sep=', ')
+                new_row.Site = rshifts.Site.str.cat(sep=', ')
+                new_row.Start = rshifts.Start.min()
+                new_row.End = rshifts.End.max()
+
+            elif len(rshifts.where(rshifts.Shift == "J PM").dropna()) > 0:
+                new_row = rshifts.where(rshifts.Shift == "J PM").dropna().copy()
+                new_row.Shift = rshifts.Shift.str.cat(sep=', ')
+                new_row.Site = rshifts.Site.str.cat(sep=', ')
+                new_row.Start = rshifts.Start.min()
+                new_row.End = rshifts.End.max()
+            
+            on_shift = on_shift.drop(index=rshifts.index)
+            on_shift = pd.concat([on_shift, new_row])
+
+        
     shift_res = set(on_shift['Resident'])
     shift_res_shifts = on_shift['Shift'].tolist()
     # st.write(len(shift_res), len(shift_res_shifts))

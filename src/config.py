@@ -37,4 +37,6 @@ to work but their shift doesn't overlap the chosen time window.
 Vacations are considered as "days off" rather than handled differently, and LTJ will 
 appear as days off as well. If you have an Ultrasound QA shift scheduled on the same 
 day as another shift, the QA will not show up. QA shifts alone will show up as day off.
+CES rotations will show up as off-service, but CES individual shifts will load as 
+regular shifts.
 '''
