@@ -223,14 +223,14 @@ def run():
 
     # st.write(blah.reset_index().pivot(index='Availability', columns='Start', values='Resident'))
 
-@st.experimental_memo(show_spinner=False)
+@st.cache_data(show_spinner=False)
 def load_residoodle_db(rdb_fn : str):
     rdb = pd.read_excel(rdb_fn, index_col=0,
                         sheet_name=['Residents','Blocks','ResidentBlockSchedule'])
     res, blocks, rbs = rdb['Residents'], rdb['Blocks'], rdb['ResidentBlockSchedule']
     return res, blocks, rbs
 
-@st.experimental_memo(show_spinner=False)
+@st.cache_data(show_spinner=False)
 def load_shiftadmin_sched(start_date : datetime.date, end_date : datetime.date):
     s = sched.load_sched_api(start_date, end_date, remove_nonum_hurley=True)
     return s
