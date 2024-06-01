@@ -291,9 +291,7 @@ def get_busy_counts(g : pd.DataFrame, sel_res : Collection[str], start_time : da
             on_shift = on_shift.drop(index=rshifts.index)
             on_shift = pd.concat([on_shift, new_row])
 
-        
-    shift_res = set(on_shift['Resident'])
-    shift_res_shifts = on_shift['Shift'].tolist()
+    shift_res = on_shift.set_index('Resident')['Shift'].to_dict()
     # st.write(len(shift_res), len(shift_res_shifts))
     
     not_on_shift = (
@@ -301,16 +299,15 @@ def get_busy_counts(g : pd.DataFrame, sel_res : Collection[str], start_time : da
                 .query('not ((@start_time <= StartTime <= @end_time) or (StartTime <= @start_time <= EndTime) \
                        or (EndTime == datetime.time(hour=0) and Type == "Evening"))')
     )
-    free_res = set(not_on_shift['Resident'])
-    free_res_shifts = not_on_shift['Shift'].tolist()
+    free_res = not_on_shift.set_index('Resident')['Shift'].to_dict()
     # st.write(len(free_res), len(free_res_shifts))
     try: 
         return pd.DataFrame({
             'Availability': (['Day Off']*len(day_off_res) + ['Off Service']*len(os_res) + ['On Shift']*len(shift_res) + ['Free']*len(free_res)),
-            'Resident': list(day_off_res) + list(os_res) + list(shift_res) + list(free_res),
-            'Shift': day_off_shifts + os_shifts + shift_res_shifts + free_res_shifts
+            'Resident': list(day_off_res) + list(os_res) + list(shift_res.keys()) + list(free_res.keys()),
+            'Shift': day_off_shifts + os_shifts + list(shift_res.values()) + list(free_res.values())
         }).set_index('Resident')
     except:
-        st.write([(day_off_res ,day_off_shifts), (os_res, os_shifts), (shift_res, shift_res_shifts), (free_res, free_res_shifts)])
+        st.write([(day_off_res ,day_off_shifts), (os_res, os_shifts), (shift_res, list(shift_res.values())), (free_res, list(free_res.values()))])
         st.error('Failure...')
         st.stop()
